@@ -24,8 +24,6 @@ navbar = dbc.NavbarSimple(
         dbc.NavItem(dbc.NavLink("Home", href="/")),
         dbc.NavItem(dbc.NavLink("Gap Minder Data", href="/gapminder")),
         dbc.NavItem(dbc.NavLink("Iris Data", href="/iris")),
-
-
     ],
     brand="Learning Dash",
     brand_href="/",
@@ -61,6 +59,7 @@ iris_page=html.Div([
         options=[{'label': name,'value': indicator} for indicator, name in iris_choices.items()],
         className="m-5"),
     dcc.Graph(id="iris_chart"),
+    
 
     
 ])
@@ -91,17 +90,7 @@ def display_page(pathname):
     else:
         return index_page
 
-pages = ["/", "/gapminder", "iris"]
 
-#Callback to set active page
-@app.callback(
-    [Output(f"{page}-link", "active") for page in pages],
-    [Input("url", "pathname")],
-)
-def toggle_active(pathname):
-    active = [False] * len(pages)
-    active[pages.index(pathname)] = True
-    return active
 
 if __name__ == "__main__":
     app.run_server(debug=True)
