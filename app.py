@@ -11,7 +11,7 @@ app=dash.Dash(__name__,external_stylesheets=[dbc.themes.DARKLY])
 app.title="My First Dash App"
 #Suppress warning for callback if they are not rendered on screen
 app.config['suppress_callback_exceptions'] = True
-
+server = app.server
 #Data Collection
 gapminder = px.data.gapminder()
 iris = px.data.iris()
