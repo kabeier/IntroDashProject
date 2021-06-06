@@ -93,7 +93,7 @@ iris_page=html.Div([
     html.Br(),
     html.H3("Try Moving the slider"),
     dcc.Graph(id="iris_chart2"),
-    html.P("Petal Width:"),
+    html.H3("Petal Width:"),
     dcc.RangeSlider(
         id='slider',
         min=0, max=2.5, step=0.25,
