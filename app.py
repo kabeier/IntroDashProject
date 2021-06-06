@@ -15,13 +15,28 @@ app.config['suppress_callback_exceptions'] = True
 
 gapminder = px.data.gapminder()
 iris = px.data.iris()
+tips = px.data.tips()
+tips['percentage']=tips["tip"]/tips["total_bill"]*100
+labels={
+    "total_bill":"Total bill",
+    "tip":"Tip",
+    "smoker":"Smoker",
+    "sex":"Sex",
+    "day":"Day",
+    "size":"Size",
+    "percentage":"Tip Percentage"
+}
 
 indicators = {"gdpPercap":"GDP Per Capita",
             "lifeExp":"Life Expectancy",
             "pop":"Population"}
+
+iris_choices={'sepal_width':'Sepal Width','sepal_length':'Sepal Length', 'petal_width':'Petal Width', 'petal_length':'Petal Length'}
+
 navbar = dbc.NavbarSimple(
     children=[
         dbc.NavItem(dbc.NavLink("Home", href="/")),
+        dbc.NavItem(dbc.NavLink("Tip Data", href="/tips")),
         dbc.NavItem(dbc.NavLink("Gap Minder Data", href="/gapminder")),
         dbc.NavItem(dbc.NavLink("Iris Data", href="/iris")),
     ],
@@ -30,6 +45,7 @@ navbar = dbc.NavbarSimple(
     color="primary",
     dark=True,
 )
+
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='content')
@@ -49,7 +65,6 @@ gapminder_page=html.Div([
     dcc.Graph(id="gapminder_chart")
 ])
 
-iris_choices={'sepal_width':'Sepal Width','sepal_length':'Sepal Length', 'petal_width':'Petal Width', 'petal_length':'Petal Length'}
 iris_page=html.Div([
     navbar,
     dcc.Dropdown(id="xchoice",
@@ -58,10 +73,18 @@ iris_page=html.Div([
     dcc.Dropdown(id="ychoice",
         options=[{'label': name,'value': indicator} for indicator, name in iris_choices.items()],
         className="m-5"),
-    dcc.Graph(id="iris_chart"),
-    
+    dcc.Graph(id="iris_chart", figure=px.scatter(iris,x="sepal_length",y="sepal_width", color = 'species', title = "Iris Dataset", labels={**iris_choices,'species':'Species'}, template="plotly_dark", height=1000)),
+])
 
-    
+tips_page=html.Div([
+    navbar,
+    dbc.Row([
+        dbc.Col(dcc.Graph(id="t1",figure=px.histogram(tips,width=300, y='percentage', x='total_bill', color='sex',histfunc='avg', labels=labels, template="plotly_dark", title="Average Tip vs Total Bill by sex"))),
+        dbc.Col(dcc.Graph(id="t2",figure=px.scatter(tips, width=300, x='percentage',y='total_bill',size='size',color='day',animation_frame='sex', labels=labels,template="plotly_dark", title="Bill Size vs Tip Percentage by Day on Gender"))),
+    ]),
+    html.Br(),
+
+    dbc.Row([dbc.Col(dcc.Graph(id='t3',figure=px.scatter(tips,x="tip",y="total_bill",size="percentage", color = 'sex', facet_col="time", labels=labels,template="plotly_dark", title="Total Bill by Tip With Gender")))])
 ])
 
 #Iris callback
@@ -87,6 +110,8 @@ def display_page(pathname):
         return gapminder_page
     elif pathname == '/iris':
         return iris_page
+    elif pathname == '/tips':
+        return tips_page
     else:
         return index_page
 
