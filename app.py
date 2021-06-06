@@ -77,20 +77,23 @@ gapminder_page=html.Div([
     dcc.Graph(id="gapminder_chart")
 ])
 
-#Iris Data
-iris_page=html.Div([
-    navbar,
-    html.H1("Explore the Iris Data Set", className="mt-5 ml-4"),
+##Iris Tabs
+#Tab for 2-D graph
+tab1= dbc.Card(dbc.CardBody([
     html.H3("Choose your Values to compare", className="mt-5 ml-4"),
-
     dcc.Dropdown(id="xchoice",
         options=[{'label': name,'value': indicator} for indicator, name in iris_choices.items()],
         className="m-5"),
     dcc.Dropdown(id="ychoice",
         options=[{'label': name,'value': indicator} for indicator, name in iris_choices.items()],
         className="m-5"),
-    dcc.Graph(id="iris_chart", figure=px.scatter(iris,x="sepal_length",y="sepal_width", color = 'species', title = "Iris Dataset", labels={**iris_choices,'species':'Species'}, template="plotly_dark", height=1000)),
-    html.Br(),
+    dcc.Graph(id="iris_chart",figure=px.scatter(iris,x="sepal_length",y="sepal_width", color = 'species', title = "Iris Dataset", labels={**iris_choices,'species':'Species'}, template="plotly_dark", height=1000)),
+    html.Br()
+    ]),className='mt-5 mb-10')
+
+#Tab for 3-D graph
+tab2=dbc.Card(
+dbc.CardBody([
     html.H3("Try Moving the slider"),
     dcc.Graph(id="iris_chart2"),
     html.H3("Petal Width:"),
@@ -98,10 +101,21 @@ iris_page=html.Div([
         id='slider',
         min=0, max=2.5, step=0.25,
         marks={0: '0',1.25:'1,25', 2.5: '2.5'},
-        value=[0.5, 2]
+        value=[0, 2.5]
     ),
     html.Br(className="mb-10")
+]),className='mt-5 mb-10')
+
+#Iris Data
+iris_page=html.Div([
+    navbar,
+    html.H1("Explore the Iris Data Set", className="mt-5 ml-4"),
+    dbc.Tabs([
+        dbc.Tab(tab1,label="2-D Chart"),
+        dbc.Tab(tab2,label="3-D Chart"),
+    ])
 ])
+
 
 #Tips Data
 tips_page=html.Div([
@@ -134,8 +148,8 @@ def update_bar_chart(slider):
     low, high = slider
     filter = (iris.petal_width > low) & (iris.petal_width < high)
     fig = px.scatter_3d(iris[filter], 
-        x='sepal_length', y='sepal_width', z='petal_width',
-        height=1000,
+        x='sepal_length', y='sepal_width', z='petal_length',
+        height=1000,  title="Sepal length x Sepal width x Petal Length and Scrollbar for Petal Width",
         color="species",  labels={**iris_choices,'species':'Species'}, template="plotly_dark", hover_data=['petal_width'])
     return fig
 
