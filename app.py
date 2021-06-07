@@ -5,6 +5,7 @@ import dash_html_components as html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Output, Input
 import plotly.express as px
+import numpy as np
 
 #init dash app and use bootstrap theme
 app=dash.Dash(__name__,external_stylesheets=[dbc.themes.DARKLY])
@@ -17,9 +18,6 @@ gapminder = px.data.gapminder()
 iris = px.data.iris()
 tips = px.data.tips()
 
-#Data manipulation
-tips['percentage']=tips["tip"]/tips["total_bill"]*100
-
 #Labels
 labels={
     "total_bill":"Total bill",
@@ -31,11 +29,18 @@ labels={
     "percentage":"Tip Percentage"
 }
 #Indicators
-indicators = {"gdpPercap":"GDP Per Capita",
-            "lifeExp":"Life Expectancy",
-            "pop":"Population"}
+indicators = {"gdpPercap":"Log GDP Per Capita",
+            "lifeExp":"Log Life Expectancy",
+            "pop":"Log Population"}
 
 iris_choices={'sepal_width':'Sepal Width','sepal_length':'Sepal Length', 'petal_width':'Petal Width', 'petal_length':'Petal Length'}
+
+
+#Data manipulation
+tips['percentage']=tips["tip"]/tips["total_bill"]*100
+for indicator in indicators.keys():
+    gapminder[indicator]=np.log(gapminder[indicator])
+
 
 #Bootstrap Simple Navbar
 navbar = dbc.NavbarSimple(
